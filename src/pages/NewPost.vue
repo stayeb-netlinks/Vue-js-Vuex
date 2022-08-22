@@ -3,32 +3,7 @@
     <div
       class="flex-1 bg-gray-200 flex py-5 md:px-2 lg:px-5 xl:px-10 flex-col 2xl:h-screen h-screen overflow-scroll scrollbar-hide"
     >
-      <div class="flex justify-between mx-5 items-center mb-10">
-        <div class="flex items-center">
-          <img
-            :src="authUser.image"
-            :alt="authUser.name"
-            class="inline-block h-8 w-8 rounded-full ring-2 ring-white mr-5"
-          />
-          <h1 class="font-bold uppercase tracking-widest text-xl md:text-2xl">
-            {{ authUser.name }}
-          </h1>
-        </div>
-        <div class="flex items-center">
-          <button
-            class="border-gray-600 px-2 rounded-md text-green-800 font-semibold hover:font-bold text-sm md:text-base"
-            @click="this.$router.push('/')"
-          >
-            Home
-          </button>
-          <vue-feather
-            type="log-out"
-            class="border-[1.5px] border-gray-400 w-fit h-fit text-gray-500 p-2 rounded-full cursor-pointer hover:bg-gray-500 hover:text-white ml-2"
-            @click="handleLogout"
-            size="20"
-          ></vue-feather>
-        </div>
-      </div>
+      <top-Bar></top-Bar>
 
       <!-- form with name, email, age, imageurl -->
       <form
@@ -362,16 +337,18 @@
 </template>
 <script>
 import { slugify } from "../utils/index";
+import TopBar from "../components/TopBar.vue";
+import { mapGetters } from "vuex";
 export default {
-  components: {},
+  components: { TopBar },
   mounted() {
     // console.log("mounted");
     let post = this.$route.params;
     this.post = post;
   },
+  computed: mapGetters(["authUser"]),
   data() {
     return {
-      authUser: JSON.parse(localStorage.getItem("authUser")) || null,
       post: {
         title: "",
         slug: "",
@@ -388,10 +365,6 @@ export default {
       if (this.post.title) {
         this.post.slug = slugify(this.post.title);
       }
-    },
-    handleLogout() {
-      localStorage.removeItem("authUser");
-      this.$router.push("/login");
     },
     handleSubmit() {
       console.log(this.post, "submit");

@@ -4,9 +4,10 @@ export default {
   mounted() {
     this.fetchUsers();
     this.fetchPosts();
+    this.fetchAuthUser();
   },
   methods: {
-    ...mapActions(["fetchUsers", "fetchPosts"]),
+    ...mapActions(["fetchUsers", "fetchPosts", "fetchAuthUser"]),
   },
 };
 </script>

@@ -1,13 +1,3 @@
-<script setup>
-// import { ref } from "vue";
-
-defineProps({
-  user: Object,
-});
-
-// const count = ref(0);
-</script>
-
 <template>
   <!-- 1 -->
   <div class="bg-gray-100 p-4 flex items-center mb-2 justify-between shadow-sm">
@@ -37,8 +27,25 @@ defineProps({
       <vue-feather
         type="delete"
         class="cursor-pointer text-gray-600 hover:text-red-500"
-        @click="$emit('delete', user.email)"
+        @click="removeUser(user.email)"
       ></vue-feather>
     </div>
   </div>
 </template>
+<script>
+import { mapActions, mapGetters } from "vuex";
+export default {
+  props: {
+    user: {},
+  },
+  components: {},
+  mounted() {},
+  computed: mapGetters([]),
+  data() {
+    return {};
+  },
+  methods: {
+    ...mapActions(["removeUser"]),
+  },
+};
+</script>

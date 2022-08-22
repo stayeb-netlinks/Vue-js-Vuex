@@ -7,10 +7,12 @@ import NewPost from "../pages/NewPost.vue";
 import Main from "../pages/Main.vue";
 import Login from "../pages/auth/Login.vue";
 
+// import store from "../store";
+
 const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
     component: Main,
     meta: {
       title: "Hello",
@@ -24,7 +26,7 @@ const routes = [
   },
   {
     path: "/new-user",
-    name: "NewUser",
+    name: "newuser",
     component: NewUser,
     meta: {
       title: "New User",
@@ -103,6 +105,8 @@ router.beforeEach((to, from, next) => {
   // console.log(nearestWithTitle.meta.title, "----------------");
   if (nearestWithTitle) document.title = nearestWithTitle.meta.title;
   const authUser = JSON.parse(localStorage.getItem("authUser")) || null;
+  // const authUser = store.getters.authUser;
+  // console.log(authUser);
   if (to.fullPath === "/") {
     if (!authUser) {
       next("/login");

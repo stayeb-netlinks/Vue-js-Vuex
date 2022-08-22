@@ -3,32 +3,7 @@
     <div
       class="flex-1 bg-gray-200 flex py-5 md:px-2 lg:px-5 xl:px-10 flex-col h-full 2xl:h-screen"
     >
-      <div class="flex justify-between mx-5 items-center mb-10">
-        <div class="flex items-center">
-          <img
-            :src="authUser.image"
-            :alt="authUser.name"
-            class="inline-block h-8 w-8 rounded-full ring-2 ring-white mr-5"
-          />
-          <h1 class="font-bold uppercase tracking-widest text-xl md:text-2xl">
-            {{ authUser.name }}
-          </h1>
-        </div>
-        <div class="flex items-center">
-          <button
-            class="border-gray-600 px-2 rounded-md text-green-800 font-semibold hover:font-bold text-sm md:text-base"
-            @click="this.$router.push('/new-post')"
-          >
-            Create Post
-          </button>
-          <vue-feather
-            type="log-out"
-            class="border-[1.5px] border-gray-400 w-fit h-fit text-gray-500 p-2 rounded-full cursor-pointer hover:bg-gray-500 hover:text-white ml-2"
-            @click="handleLogout"
-            size="20"
-          ></vue-feather>
-        </div>
-      </div>
+      <top-bar></top-bar>
 
       <!-- form with name, email, age, imageurl -->
       <Form
@@ -184,8 +159,7 @@
         v-if="allUsers.length > 0"
         :key="user.email"
         :user="{ ...user, index: index + 1 }"
-        @delete="handleRemove"
-        @edit="handleEdit"
+        @edit="handleEditUser"
       ></user-card>
 
       <div v-else class="flex flex-1 flex-col justify-center items-center m-10">
@@ -200,13 +174,16 @@
 </template>
 <script>
 import UserCard from "../components/UserCard.vue";
+import TopBar from "../components/TopBar.vue";
 import { Field, Form, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
 import { mapActions, mapGetters } from "vuex";
 export default {
-  components: { UserCard, Field, Form, ErrorMessage },
-  mounted() {},
-  computed: mapGetters(["allUsers", "authUser"]),
+  components: { UserCard, Field, Form, ErrorMessage, TopBar },
+  mounted() {
+    this.user = this.$route.params;
+  },
+  computed: mapGetters(["allUsers"]),
   data() {
     return {
       user: {},
@@ -222,76 +199,15 @@ export default {
   },
   methods: {
     ...mapActions(["addUser"]),
-    handleLogout() {
-      localStorage.removeItem("authUser");
-      this.$router.push("/login");
+
+    handleEditUser(user) {
+      this.user = user;
     },
-    handleInitialData() {
-      const usersList = JSON.parse(localStorage.getItem("usersList")) || [];
-      let filterResult;
-      let { search, age } = this.$route.query;
-      console.log(search, age);
-      if (search && age) {
-        console.log("1");
-        let ageLimits = age.split("-");
-        filterResult = usersList.filter(
-          (user) =>
-            user.name.toUpperCase() === search.toUpperCase() ||
-            user.email.toUpperCase() === search.toUpperCase() ||
-            (user.address.toUpperCase() === search.toUpperCase() &&
-              user.age >= ageLimits[0] &&
-              user.age <= ageLimits[1])
-        );
-      } else if (search && !age) {
-        console.log("2");
-        filterResult = usersList.filter(
-          (user) =>
-            user.name.toUpperCase() === search.toUpperCase() ||
-            user.email.toUpperCase() === search.toUpperCase() ||
-            user.address.toUpperCase() === search.toUpperCase()
-        );
-      } else if (age && !search) {
-        console.log("3");
-        let ageLimits = age.split("-");
-        filterResult = usersList.filter(
-          (user) => user.age >= ageLimits[0] && user.age <= ageLimits[1]
-        );
-      } else {
-        console.log("4");
-        filterResult = usersList;
-      }
-      console.log(filterResult);
-      return filterResult;
-    },
-    handleSubmit() {
-      // console.log(this.user);
-      if (this.user.name && this.user.email && this.user.age) {
-        const flag = this.usersList.filter((user, index) => {
-          if (user.email === this.user.email) {
-            return (this.usersList[index] = this.user);
-          }
-        });
-        // console.log(flag);
-        if (flag.length == 0) {
-          // this.usersList.push(this.user);
-          this.usersList = [...this.usersList, this.user];
-        }
-      }
-      localStorage.setItem("usersList", JSON.stringify(this.usersList));
-      this.handleReset();
-    },
+
     handleReset() {
       this.user = {};
     },
-    handleRemove(userEmail) {
-      console.log("remove", userEmail);
-      this.usersList = this.usersList.filter((user) => user.email != userEmail);
-      localStorage.setItem("usersList", JSON.stringify(this.usersList));
-    },
-    handleEdit(user) {
-      // console.log("edit", user);
-      this.user = user;
-    },
+
     handleBadgeRemove(key) {
       console.log(key);
       let query = Object.assign({}, this.$route.query);

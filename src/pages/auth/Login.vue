@@ -1,6 +1,7 @@
 <script>
 import { Field, Form, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     Field,
@@ -11,28 +12,19 @@ export default {
     return {
       email: "",
       password: "",
-      errMsg: "",
       simpleSchema: {
         email: yup.string().required().email(),
         password: yup.string().required().min(2),
       },
     };
   },
+  computed: mapGetters(["errMsg", "authUser"]),
   methods: {
+    ...mapActions(["login"]),
     handleLogin() {
-      console.log("login");
-      const users = JSON.parse(localStorage.getItem("usersList")) || [];
-      if (users.length > 0) {
-        const user = users.filter(
-          (u) => u.email === this.email && u.password === this.password
-        );
-        if (user.length > 0) {
-          localStorage.setItem("authUser", JSON.stringify(user[0]));
-          this.$router.push("/");
-        } else {
-          // console.log("Check Your Email or Password.");
-          this.errMsg = "Check Your Email or Password.";
-        }
+      this.login({ email: this.email, password: this.password });
+      if (this.authUser) {
+        this.$router.push("/");
       }
     },
     handleReset() {
